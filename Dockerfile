@@ -68,18 +68,13 @@ RUN set -ex ;\
           # we can't build kernel on root (like docker runs)
           # we add these so we have a non-root user
           fakeroot \
-	      sudo \
+          sudo \
+          gosu \
           ;\
     rm -rf /var/lib/apt/lists/*
 
 # run config in a seperate layer so we cache it
 RUN set -ex ;\
-    # User setup
-    # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-    groupadd -r lineageos && useradd -r -g lineageos lineageos && usermod -u 1000 lineageos ;\
-    # allow non-root user to remount fs
-    # adding ALL permissions so they can do other stuff in the future, like sudo vim
-    echo "lineageos ALL=NOPASSWD: ALL" >> /etc/sudoers ;\
     # Android Setup
     # create paths: https://wiki.lineageos.org/devices/klte/build#create-the-directories
     curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo ;\
@@ -98,8 +93,11 @@ COPY lineageos /bin
 # copy dir with several PRed device configurations
 COPY device-config $DEVICE_CONFIGS_DIR
 
-# set volume and user home folder
-USER $USER
-WORKDIR $BASE_DIR
+# copy entrypoint into conatiner
+COPY entrypoint.sh /usr/local/bin/
 
-CMD /bin/bash
+# set entrypoint
+ENTRYPOINT ["bash", "/usr/local/bin/entrypoint.sh"]
+
+# use bash
+CMD ["/bin/bash"]
