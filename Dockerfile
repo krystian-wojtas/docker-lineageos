@@ -79,10 +79,6 @@ RUN set -ex ;\
     # create paths: https://wiki.lineageos.org/devices/klte/build#create-the-directories
     curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo ;\
     chmod a+x /usr/bin/repo ;\
-    # config git coloring
-    # check this link for things repo check:
-    # https://gerrit.googlesource.com/git-repo/+/master/subcmds/init.py#328
-    git config --global color.ui true ;\
     # source init when any bash is called (which includes the lineageos script)
     echo "source /etc/profile.d/init.sh" >> /etc/bash.bashrc
 
